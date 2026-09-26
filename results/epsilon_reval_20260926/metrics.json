@@ -1,0 +1,168 @@
+{
+  "ensembles": [
+    {
+      "inference_epsilon": 0.025,
+      "metrics": {
+        "aupr": 0.6315718344698409,
+        "auroc": 0.7166780124293646,
+        "log_loss": 0.7615773878990667
+      },
+      "model": "v23",
+      "seeds": [
+        42,
+        43
+      ]
+    },
+    {
+      "inference_epsilon": 0.0125,
+      "metrics": {
+        "aupr": 0.6320821379205472,
+        "auroc": 0.7192155379068075,
+        "log_loss": 0.737327690920307
+      },
+      "model": "v23",
+      "seeds": [
+        42,
+        43
+      ]
+    },
+    {
+      "inference_epsilon": 0.025,
+      "metrics": {
+        "aupr": 0.6383671009253284,
+        "auroc": 0.7238250173676196,
+        "log_loss": 0.757412239704078
+      },
+      "model": "v36",
+      "seeds": [
+        42,
+        43
+      ]
+    },
+    {
+      "inference_epsilon": 0.0125,
+      "metrics": {
+        "aupr": 0.636306205297835,
+        "auroc": 0.72328504097261,
+        "log_loss": 0.7344620115553778
+      },
+      "model": "v36",
+      "seeds": [
+        42,
+        43
+      ]
+    }
+  ],
+  "evaluation": "v23_v36_epsilon_reval_20260926",
+  "inference_epsilons": [
+    0.025,
+    0.0125
+  ],
+  "runs": [
+    {
+      "candidate_best_epoch": 6,
+      "candidate_checkpoint_sha256": "b9cbf62db187c608a9ae8d3b918e3b760716bd53702d2fa73dac8c3b9cade4a2",
+      "inference_epsilon": 0.025,
+      "metrics": {
+        "aupr": 0.615986198118694,
+        "auroc": 0.7060663595360043,
+        "log_loss": 0.825402919400105
+      },
+      "model": "v23",
+      "seed": 42
+    },
+    {
+      "candidate_best_epoch": 6,
+      "candidate_checkpoint_sha256": "b9cbf62db187c608a9ae8d3b918e3b760716bd53702d2fa73dac8c3b9cade4a2",
+      "inference_epsilon": 0.0125,
+      "metrics": {
+        "aupr": 0.6164326500390145,
+        "auroc": 0.708784927522362,
+        "log_loss": 0.7954257207245062
+      },
+      "model": "v23",
+      "seed": 42
+    },
+    {
+      "candidate_best_epoch": 32,
+      "candidate_checkpoint_sha256": "16350afeb515aec43b5a6349d03d2fd964c02555ed633de2e8278ca16069fc2f",
+      "inference_epsilon": 0.025,
+      "metrics": {
+        "aupr": 0.6189707066740878,
+        "auroc": 0.7058786174784304,
+        "log_loss": 0.8449922155044196
+      },
+      "model": "v23",
+      "seed": 43
+    },
+    {
+      "candidate_best_epoch": 32,
+      "candidate_checkpoint_sha256": "16350afeb515aec43b5a6349d03d2fd964c02555ed633de2e8278ca16069fc2f",
+      "inference_epsilon": 0.0125,
+      "metrics": {
+        "aupr": 0.6213786561183081,
+        "auroc": 0.70939808180476,
+        "log_loss": 0.8113741119513019
+      },
+      "model": "v23",
+      "seed": 43
+    },
+    {
+      "candidate_best_epoch": 48,
+      "candidate_checkpoint_sha256": "98b94118affbc021751175acfb3eeba3958f199227f85732beb17c96933950dd",
+      "inference_epsilon": 0.025,
+      "metrics": {
+        "aupr": 0.6213442297512284,
+        "auroc": 0.7104377999962994,
+        "log_loss": 0.8396219334790188
+      },
+      "model": "v36",
+      "seed": 42
+    },
+    {
+      "candidate_best_epoch": 48,
+      "candidate_checkpoint_sha256": "98b94118affbc021751175acfb3eeba3958f199227f85732beb17c96933950dd",
+      "inference_epsilon": 0.0125,
+      "metrics": {
+        "aupr": 0.6213740191238459,
+        "auroc": 0.7124806004607145,
+        "log_loss": 0.7964107422602852
+      },
+      "model": "v36",
+      "seed": 42
+    },
+    {
+      "candidate_best_epoch": 52,
+      "candidate_checkpoint_sha256": "820bf575616050952b2a221faf53294793da7853392eec59fb1f0912f86ba0a0",
+      "inference_epsilon": 0.025,
+      "metrics": {
+        "aupr": 0.6226104747871628,
+        "auroc": 0.7116430760800705,
+        "log_loss": 0.8441572348854631
+      },
+      "model": "v36",
+      "seed": 43
+    },
+    {
+      "candidate_best_epoch": 52,
+      "candidate_checkpoint_sha256": "820bf575616050952b2a221faf53294793da7853392eec59fb1f0912f86ba0a0",
+      "inference_epsilon": 0.0125,
+      "metrics": {
+        "aupr": 0.6238702609778435,
+        "auroc": 0.7128249962611114,
+        "log_loss": 0.8089576493168847
+      },
+      "model": "v36",
+      "seed": 43
+    }
+  ],
+  "seeds": [
+    42,
+    43
+  ],
+  "selection_note": "Existing selected checkpoints; no test-based reselection.",
+  "test_csv_sha256": "1de92afebe892fc512f639735872471231be539f3d7426ee686656acce44ddb7",
+  "test_rows": 179829,
+  "test_split": "protein_cold_test",
+  "trained_epsilon": 0.025
+}
