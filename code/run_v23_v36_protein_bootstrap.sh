@@ -15,6 +15,7 @@ Options:
   --evaluation-root PATH       Existing epsilon re-evaluation output root.
   --test-csv PATH              Locked protein-cold test CSV.
   --output-dir PATH            New analysis output directory.
+  --reference-metrics PATH     Previous result used for macro regression checks.
   --bootstrap-replicates N     Protein bootstrap replicates (default: 2000).
   --bootstrap-seed N           Bootstrap RNG seed (default: 20260926).
   --protein-column NAME        Protein identity CSV column (default: Protein).
@@ -30,6 +31,7 @@ python_bin="${GLOBIS_PYTHON:-/mnt/home/dachuang/conda_envs/DTIAM/bin/python}"
 evaluation_root=""
 test_csv="${GLOBIS_TEST_CSV:-/mnt/home/dachuang/dti_in_domain_test/splits/protein_cold_start/test.csv}"
 output_dir=""
+reference_metrics=""
 bootstrap_replicates=2000
 bootstrap_seed=20260926
 protein_column=Protein
@@ -42,6 +44,7 @@ while [[ $# -gt 0 ]]; do
     --evaluation-root) evaluation_root="$2"; shift 2 ;;
     --test-csv) test_csv="$2"; shift 2 ;;
     --output-dir) output_dir="$2"; shift 2 ;;
+    --reference-metrics) reference_metrics="$2"; shift 2 ;;
     --bootstrap-replicates) bootstrap_replicates="$2"; shift 2 ;;
     --bootstrap-seed) bootstrap_seed="$2"; shift 2 ;;
     --protein-column) protein_column="$2"; shift 2 ;;
@@ -51,7 +54,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 evaluation_root="${evaluation_root:-${root}/external_benchmark/test_evaluations/epsilon_reval_20260926}"
-output_dir="${output_dir:-${root}/external_benchmark/audits/protein_bootstrap_20260926}"
+output_dir="${output_dir:-${root}/external_benchmark/audits/protein_bootstrap_20260927_fixed}"
+reference_metrics="${reference_metrics:-${root}/external_benchmark/audits/protein_bootstrap_20260926/metrics.json}"
 expected_metrics="${repo_root}/results/epsilon_reval_20260926/metrics.json"
 analysis_script="${script_dir}/analyze_v23_v36_protein_bootstrap.py"
 project_pythonpath="${root}/code"
@@ -72,6 +76,7 @@ require_file() {
 require_file "${analysis_script}"
 require_file "${expected_metrics}"
 require_file "${test_csv}"
+require_file "${reference_metrics}"
 
 for model in v23 v36; do
   for seed in 42 43; do
@@ -90,6 +95,7 @@ command=(
   --test-csv "${test_csv}"
   --protein-column "${protein_column}"
   --output-dir "${output_dir}"
+  --reference-metrics "${reference_metrics}"
   --bootstrap-replicates "${bootstrap_replicates}"
   --bootstrap-seed "${bootstrap_seed}"
 )

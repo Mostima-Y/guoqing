@@ -54,14 +54,30 @@ test CSV hash, row count, selected checkpoint hashes/epochs, model variants,
 seeds, and epsilon before analysis. Protein strings are used only for grouping;
 the output records SHA-256 identities rather than raw sequences.
 
-Expected new server-only output directory:
+The original 2026-09-26 analysis exposed an AUPR implementation bug: cluster
+resampling can give zero weight to all rows above an early score threshold, so
+the cumulative precision denominator is zero. The old `0/0` contaminated AP
+even though the corresponding recall increment was zero. All score arrays were
+finite and reproduced their locked metrics, so this was a statistics-only
+numerical problem, not missing prediction data. The repaired implementation
+uses safe, sklearn-equivalent precision and audits the first five replicates
+against `average_precision_score`. It keeps seed `20260926`, all 2,000 sampled
+protein clusters, and every scientific input unchanged.
+
+The invalid output is retained for regression checks and must not be reported
+as a final confidence interval:
 
 `external_benchmark/audits/protein_bootstrap_20260926/`
+
+Corrected server-only output directory:
+
+`external_benchmark/audits/protein_bootstrap_20260927_fixed/`
 
 It must not already exist. The launcher refuses to overwrite it. Outputs are
 small tabular/JSON summaries only:
 
 - `metrics.json`
+- `metrics.tsv`
 - `per_protein_metrics.csv`
 - `strata_metrics.csv`
 

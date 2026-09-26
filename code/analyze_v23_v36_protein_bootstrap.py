@@ -43,6 +43,8 @@ def delta_metrics(v23: dict, v36: dict) -> dict:
 
 
 def confidence_summary(values: np.ndarray, higher_is_better: bool) -> dict:
+    if values.size == 0 or not np.isfinite(values).all():
+        raise ValueError("Bootstrap summary requires non-empty finite values")
     summary = {
         "mean": float(np.mean(values)),
         "median": float(np.median(values)),
@@ -203,7 +205,13 @@ def weighted_metrics_preordered(
         prepared["group_ends"]
     ]
     recall = true_positives / positive_weight
-    precision = true_positives / (true_positives + false_positives)
+    predicted_positive_weight = true_positives + false_positives
+    precision = np.divide(
+        true_positives,
+        predicted_positive_weight,
+        out=np.ones_like(true_positives, dtype=np.float64),
+        where=predicted_positive_weight > 0.0,
+    )
     aupr = np.sum(np.diff(np.r_[0.0, recall]) * precision)
     true_positive_rate = np.r_[0.0, recall]
     false_positive_rate = np.r_[0.0, false_positives / negative_weight]
@@ -214,6 +222,80 @@ def weighted_metrics_preordered(
         "auroc": float(auroc),
         "log_loss": float(weighted_log_loss),
     }
+
+
+def verify_reference_macro(
+    reference_path: Path,
+    macro: dict,
+    macro_bootstrap_summary: dict,
+    tolerance: float,
+) -> dict:
+    with reference_path.open(encoding="utf-8") as handle:
+        reference = json.load(handle)
+    comparisons = {}
+    maximum_absolute_difference = 0.0
+    for metric in ("aupr", "auroc"):
+        for key in ("v23", "v36", "delta"):
+            label = "observed_macro.{}.{}".format(metric, key)
+            actual = float(macro[metric][key])
+            previous = float(reference["macro_both_class_proteins"][metric][key])
+            difference = abs(actual - previous)
+            comparisons[label] = difference
+            maximum_absolute_difference = max(maximum_absolute_difference, difference)
+        for key in (
+            "mean",
+            "median",
+            "ci95_low",
+            "ci95_high",
+            "probability_positive",
+        ):
+            label = "bootstrap_macro.{}.{}".format(metric, key)
+            actual = float(macro_bootstrap_summary[metric][key])
+            previous = float(
+                reference["bootstrap"]["macro_delta_v36_minus_v23"][metric][key]
+            )
+            difference = abs(actual - previous)
+            comparisons[label] = difference
+            maximum_absolute_difference = max(maximum_absolute_difference, difference)
+    if maximum_absolute_difference > tolerance:
+        raise ValueError(
+            "Macro regression check failed: max absolute difference {} > {}".format(
+                maximum_absolute_difference, tolerance
+            )
+        )
+    return {
+        "reference_metrics": str(reference_path.resolve()),
+        "tolerance": tolerance,
+        "maximum_absolute_difference": maximum_absolute_difference,
+        "comparisons": comparisons,
+        "status": "PASS",
+    }
+
+
+def write_metrics_tsv(path: Path, result: dict) -> None:
+    rows = []
+    for model, metrics in result["observed_micro"].items():
+        for metric, value in metrics.items():
+            rows.append(("observed_micro", model, metric, "value", value))
+    for metric, value in result["observed_micro_delta_v36_minus_v23"].items():
+        rows.append(("observed_micro_delta", "v36_minus_v23", metric, "value", value))
+    for metric, summary in result["bootstrap"][
+        "micro_delta_v36_minus_v23"
+    ].items():
+        for statistic, value in summary.items():
+            rows.append(("bootstrap_micro_delta", "v36_minus_v23", metric, statistic, value))
+    for metric, summary in result["macro_both_class_proteins"].items():
+        for statistic in ("v23", "v36", "delta"):
+            rows.append(("observed_macro", statistic, metric, "value", summary[statistic]))
+    for metric, summary in result["bootstrap"][
+        "macro_delta_v36_minus_v23"
+    ].items():
+        for statistic, value in summary.items():
+            rows.append(("bootstrap_macro_delta", "v36_minus_v23", metric, statistic, value))
+    with path.open("x", encoding="utf-8", newline="") as handle:
+        handle.write("scope\tmodel_or_contrast\tmetric\tstatistic\tvalue\n")
+        for row in rows:
+            handle.write("{}\t{}\t{}\t{}\t{:.17g}\n".format(*row))
 
 
 def summarize_stratum(
@@ -265,7 +347,15 @@ def summarize_stratum(
 def main(args: argparse.Namespace) -> None:
     if args.bootstrap_replicates <= 0:
         raise ValueError("--bootstrap-replicates must be positive")
-    if args.tie_tolerance < 0.0 or args.metric_tolerance < 0.0:
+    if not 0 <= args.sklearn_audit_replicates <= args.bootstrap_replicates:
+        raise ValueError(
+            "--sklearn-audit-replicates must be between zero and all replicates"
+        )
+    if (
+        args.tie_tolerance < 0.0
+        or args.metric_tolerance < 0.0
+        or args.regression_tolerance < 0.0
+    ):
         raise ValueError("Tolerances must be non-negative")
     expected_path = Path(args.expected_metrics).resolve()
     with expected_path.open(encoding="utf-8") as handle:
@@ -439,13 +529,35 @@ def main(args: argparse.Namespace) -> None:
         multiplicity = np.bincount(sampled, minlength=len(unique_proteins))
         weights = multiplicity[codes]
         if np.sum(weights[y_true == 0]) == 0 or np.sum(weights[y_true == 1]) == 0:
-            continue
+            raise RuntimeError(
+                "Bootstrap replicate {} does not contain both classes".format(
+                    replicate
+                )
+            )
         v23_metrics = weighted_metrics_preordered(
             y_true, weights, prepared_scores["v23"]
         )
         v36_metrics = weighted_metrics_preordered(
             y_true, weights, prepared_scores["v36"]
         )
+        if replicate < args.sklearn_audit_replicates:
+            for model, fast_metrics in (
+                ("v23", v23_metrics),
+                ("v36", v36_metrics),
+            ):
+                sklearn_metrics = binary_metrics(y_true, scores[model], weights)
+                for metric in METRICS:
+                    if not np.isclose(
+                        fast_metrics[metric],
+                        sklearn_metrics[metric],
+                        rtol=0.0,
+                        atol=args.metric_tolerance,
+                    ):
+                        raise ValueError(
+                            "Preordered {} differs from sklearn for replicate {} {}".format(
+                                metric, replicate, model
+                            )
+                        )
         for metric in METRICS:
             micro_bootstrap[metric].append(
                 v36_metrics[metric] - v23_metrics[metric]
@@ -453,7 +565,11 @@ def main(args: argparse.Namespace) -> None:
         macro_weights = multiplicity[eligible_protein_ids]
         macro_weight_sum = int(macro_weights.sum())
         if macro_weight_sum == 0:
-            continue
+            raise RuntimeError(
+                "Bootstrap replicate {} contains no both-class protein".format(
+                    replicate
+                )
+            )
         for metric in ("aupr", "auroc"):
             macro_bootstrap[metric].append(
                 float(
@@ -464,25 +580,68 @@ def main(args: argparse.Namespace) -> None:
         if args.progress_every and (replicate + 1) % args.progress_every == 0:
             print("bootstrap {}/{}".format(replicate + 1, args.bootstrap_replicates))
 
+    replicate_validation = {}
+    for scope, values_by_metric in (
+        ("micro", micro_bootstrap),
+        ("macro", macro_bootstrap),
+    ):
+        replicate_validation[scope] = {}
+        for metric, values in values_by_metric.items():
+            array = np.asarray(values)
+            finite_count = int(np.isfinite(array).sum())
+            if len(array) != args.bootstrap_replicates or finite_count != len(array):
+                raise RuntimeError(
+                    "{} {} bootstrap is incomplete or non-finite: {}/{}".format(
+                        scope, metric, finite_count, args.bootstrap_replicates
+                    )
+                )
+            replicate_validation[scope][metric] = {
+                "replicates": len(array),
+                "finite": finite_count,
+                "status": "PASS",
+            }
+
+    macro_bootstrap_summary = {
+        metric: confidence_summary(np.asarray(values), higher_is_better=True)
+        for metric, values in macro_bootstrap.items()
+    }
+    regression_checks = {
+        "sklearn_equivalence": {
+            "replicates_checked": args.sklearn_audit_replicates,
+            "metrics": list(METRICS),
+            "tolerance": args.metric_tolerance,
+            "status": "PASS",
+        }
+    }
+    if args.reference_metrics:
+        regression_checks["previous_macro_results"] = verify_reference_macro(
+            Path(args.reference_metrics).resolve(),
+            macro,
+            macro_bootstrap_summary,
+            args.regression_tolerance,
+        )
+
     bootstrap = {
         "method": "paired protein-cluster bootstrap with replacement",
+        "average_precision_implementation": (
+            "score-preordered weighted average precision with safe zero-denominator "
+            "handling; audited against sklearn.metrics.average_precision_score"
+        ),
         "replicates_requested": args.bootstrap_replicates,
         "replicates_completed": len(micro_bootstrap["aupr"]),
         "seed": args.bootstrap_seed,
+        "replicate_validation": replicate_validation,
         "micro_delta_v36_minus_v23": {
             metric: confidence_summary(
                 np.asarray(values), higher_is_better=(metric != "log_loss")
             )
             for metric, values in micro_bootstrap.items()
         },
-        "macro_delta_v36_minus_v23": {
-            metric: confidence_summary(np.asarray(values), higher_is_better=True)
-            for metric, values in macro_bootstrap.items()
-        },
+        "macro_delta_v36_minus_v23": macro_bootstrap_summary,
     }
 
     result = {
-        "analysis": "v23_v36_protein_paired_bootstrap_v1",
+        "analysis": "v23_v36_protein_paired_bootstrap_v2_safe_ap",
         "input_audit": audit,
         "observed_micro": observed,
         "observed_micro_delta_v36_minus_v23": observed_delta,
@@ -490,6 +649,7 @@ def main(args: argparse.Namespace) -> None:
         "protein_direction_counts": directions,
         "strata": strata,
         "bootstrap": bootstrap,
+        "regression_checks": regression_checks,
         "interpretation_constraints": [
             "Uses frozen inference epsilon 0.0125 selected on protein_cold_valid.",
             "Uses existing seed42/43 test predictions; no model inference was run.",
@@ -497,8 +657,9 @@ def main(args: argparse.Namespace) -> None:
         ],
     }
     with (output_dir / "metrics.json").open("x", encoding="utf-8") as handle:
-        json.dump(result, handle, indent=2, sort_keys=True)
+        json.dump(result, handle, indent=2, sort_keys=True, allow_nan=False)
         handle.write("\n")
+    write_metrics_tsv(output_dir / "metrics.tsv", result)
     per_protein.to_csv(output_dir / "per_protein_metrics.csv", index=False)
     pd.json_normalize(strata).to_csv(output_dir / "strata_metrics.csv", index=False)
     print(json.dumps(result, indent=2, sort_keys=True))
@@ -516,6 +677,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--tie-tolerance", type=float, default=1e-6)
     parser.add_argument("--metric-tolerance", type=float, default=1e-8)
     parser.add_argument("--progress-every", type=int, default=100)
+    parser.add_argument("--sklearn-audit-replicates", type=int, default=5)
+    parser.add_argument("--reference-metrics")
+    parser.add_argument("--regression-tolerance", type=float, default=1e-12)
     parser.add_argument("--dry-run", action="store_true")
     return parser
 
