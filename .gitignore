@@ -1,0 +1,4 @@
+# GloBIS-DTI evaluation outputs that must remain on the GPU server.
+external_benchmark/test_evaluations/epsilon_reval_20260926/**/*.npy
+external_benchmark/test_evaluations/epsilon_reval_20260926/logs/
+external_benchmark/test_evaluations/epsilon_reval_20260926/summary_stdout.log
