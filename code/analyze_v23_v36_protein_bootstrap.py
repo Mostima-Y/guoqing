@@ -184,7 +184,12 @@ def prepare_score_order(y_true: np.ndarray, scores: np.ndarray) -> dict:
     ]
     clipped = np.clip(scores, 1e-7, 1.0 - 1e-7)
     row_loss = -(y_true * np.log(clipped) + (1 - y_true) * np.log1p(-clipped))
-    return {"order": order, "group_ends": group_ends, "row_loss": row_loss}
+    return {
+        "scores": scores,
+        "order": order,
+        "group_ends": group_ends,
+        "row_loss": row_loss,
+    }
 
 
 def weighted_metrics_preordered(
@@ -205,14 +210,11 @@ def weighted_metrics_preordered(
         prepared["group_ends"]
     ]
     recall = true_positives / positive_weight
-    predicted_positive_weight = true_positives + false_positives
-    precision = np.divide(
-        true_positives,
-        predicted_positive_weight,
-        out=np.ones_like(true_positives, dtype=np.float64),
-        where=predicted_positive_weight > 0.0,
+    aupr = average_precision_score(
+        y_true,
+        prepared["scores"],
+        sample_weight=weights,
     )
-    aupr = np.sum(np.diff(np.r_[0.0, recall]) * precision)
     true_positive_rate = np.r_[0.0, recall]
     false_positive_rate = np.r_[0.0, false_positives / negative_weight]
     auroc = np.trapz(true_positive_rate, false_positive_rate)
@@ -624,8 +626,8 @@ def main(args: argparse.Namespace) -> None:
     bootstrap = {
         "method": "paired protein-cluster bootstrap with replacement",
         "average_precision_implementation": (
-            "score-preordered weighted average precision with safe zero-denominator "
-            "handling; audited against sklearn.metrics.average_precision_score"
+            "sklearn.metrics.average_precision_score with protein-cluster "
+            "sample weights"
         ),
         "replicates_requested": args.bootstrap_replicates,
         "replicates_completed": len(micro_bootstrap["aupr"]),
