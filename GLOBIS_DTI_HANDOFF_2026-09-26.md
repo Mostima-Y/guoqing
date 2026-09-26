@@ -74,6 +74,10 @@ proteins.
 
 Run `--dry-run` first. Dry-run loads and audits the four existing score arrays
 but creates no output and performs no bootstrap. No GPU is required.
+The launcher is run from the Git checkout (normally
+`/mnt/home/dachuang/guoqing`) and reads dependencies/artifacts from the
+authoritative workspace through its default `--root`; no script or prediction
+array needs to be copied between the two directories.
 
 ## Interpretation boundary
 

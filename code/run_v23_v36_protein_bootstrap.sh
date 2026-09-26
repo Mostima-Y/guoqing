@@ -23,6 +23,8 @@ EOF
 }
 
 dry_run=0
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+repo_root="$(cd -- "${script_dir}/.." && pwd)"
 root="${GLOBIS_ROOT:-/mnt/home/dachuang/dtiam/DTIAM-main/DTIAM_Sepsis_Dev}"
 python_bin="${GLOBIS_PYTHON:-/mnt/home/dachuang/conda_envs/DTIAM/bin/python}"
 evaluation_root=""
@@ -50,8 +52,12 @@ done
 
 evaluation_root="${evaluation_root:-${root}/external_benchmark/test_evaluations/epsilon_reval_20260926}"
 output_dir="${output_dir:-${root}/external_benchmark/audits/protein_bootstrap_20260926}"
-expected_metrics="${root}/results/epsilon_reval_20260926/metrics.json"
-analysis_script="${root}/code/analyze_v23_v36_protein_bootstrap.py"
+expected_metrics="${repo_root}/results/epsilon_reval_20260926/metrics.json"
+analysis_script="${script_dir}/analyze_v23_v36_protein_bootstrap.py"
+project_pythonpath="${root}/code"
+if [[ -n "${PYTHONPATH:-}" ]]; then
+  project_pythonpath="${project_pythonpath}:${PYTHONPATH}"
+fi
 
 fail() {
   echo "ERROR: $*" >&2
@@ -78,7 +84,7 @@ if [[ "${dry_run}" -eq 0 && -e "${output_dir}" ]]; then
 fi
 
 command=(
-  "${python_bin}" -u "${analysis_script}"
+  env "PYTHONPATH=${project_pythonpath}" "${python_bin}" -u "${analysis_script}"
   --evaluation-root "${evaluation_root}"
   --expected-metrics "${expected_metrics}"
   --test-csv "${test_csv}"
