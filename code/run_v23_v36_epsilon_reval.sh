@@ -15,6 +15,7 @@ Options:
   --output-root PATH        New evaluation output directory.
   --gpu42 DEVICE            CUDA_VISIBLE_DEVICES selector for seed 42.
   --gpu43 DEVICE            CUDA_VISIBLE_DEVICES selector for seed 43.
+  --seed all|42|43          Seeds to process (default: all).
   --v23-checkpoint-42 PATH  Override the documented V23 seed-42 checkpoint.
   --v23-checkpoint-43 PATH  Override the documented V23 seed-43 checkpoint.
   --v36-checkpoint-42 PATH  Override the documented V36 seed-42 checkpoint.
@@ -33,6 +34,7 @@ python_bin="${GLOBIS_PYTHON:-/mnt/home/dachuang/conda_envs/DTIAM/bin/python}"
 output_root_override="${OUTPUT_ROOT:-}"
 gpu42="${GPU42:-0}"
 gpu43="${GPU43:-1}"
+selected_seed="all"
 v23_checkpoint_42="${V23_CHECKPOINT_42:-}"
 v23_checkpoint_43="${V23_CHECKPOINT_43:-}"
 v36_checkpoint_42="${V36_CHECKPOINT_42:-}"
@@ -46,6 +48,7 @@ while [[ $# -gt 0 ]]; do
     --output-root) output_root_override="$2"; shift 2 ;;
     --gpu42) gpu42="$2"; shift 2 ;;
     --gpu43) gpu43="$2"; shift 2 ;;
+    --seed) selected_seed="$2"; shift 2 ;;
     --v23-checkpoint-42) v23_checkpoint_42="$2"; shift 2 ;;
     --v23-checkpoint-43) v23_checkpoint_43="$2"; shift 2 ;;
     --v36-checkpoint-42) v36_checkpoint_42="$2"; shift 2 ;;
@@ -54,6 +57,13 @@ while [[ $# -gt 0 ]]; do
     *) echo "Unknown option: $1" >&2; usage >&2; exit 2 ;;
   esac
 done
+
+case "${selected_seed}" in
+  all) selected_seeds=(42 43) ;;
+  42) selected_seeds=(42) ;;
+  43) selected_seeds=(43) ;;
+  *) echo "Invalid --seed value: ${selected_seed}; expected all, 42, or 43" >&2; exit 2 ;;
+esac
 
 output_root="${output_root_override:-${root}/external_benchmark/test_evaluations/epsilon_reval_20260926}"
 indices="${root}/external_benchmark/screen_subsets/full_protein_cold_train_indices.npy"
@@ -112,7 +122,7 @@ print_command() {
   printf '\n'
 }
 
-[[ ! -e "${output_root}" ]] || fail "output root already exists; refusing to overwrite: ${output_root}"
+[[ ! -e "${output_root}" || -d "${output_root}" ]] || fail "output root exists but is not a directory: ${output_root}"
 [[ -x "${python_bin}" ]] || fail "Python interpreter missing or not executable: ${python_bin}"
 require_file "${root}/code/evaluate_atom_segment_test.py"
 require_file "${root}/code/summarize_v23_v36_epsilon_reval.py"
@@ -126,7 +136,7 @@ require_file "${segments}/metadata.json"
 require_file "${test_segments}/metadata.json"
 require_file "${tokens}/metadata.json"
 
-for seed in 42 43; do
+for seed in "${selected_seeds[@]}"; do
   base="${base_root}/protein_cold_bilinear_control_bn_ln_seed${seed}_e60/members/member_00"
   require_file "${base}/best.pt"
   require_file "${base}/protein_cold_test_scores.npy"
@@ -142,6 +152,15 @@ run_evaluation() {
   base="${base_root}/protein_cold_bilinear_control_bn_ln_seed${seed}_e60/members/member_00"
   output="${output_root}/${model}/seed${seed}/$(epsilon_directory "${epsilon}")"
   log_file="${output_root}/logs/${model}_seed${seed}_epsilon_${epsilon}.log"
+  if [[ -f "${output}/completed.json" ]]; then
+    echo "SKIP completed: ${output}"
+    return 0
+  fi
+  if [[ -e "${output}" ]]; then
+    echo "INCOMPLETE: ${output}" >&2
+    return 1
+  fi
+  echo "RUN missing: ${output}"
   local command=(
     env "CUDA_VISIBLE_DEVICES=${gpu}" "${python_bin}" -u
     code/evaluate_atom_segment_test.py
@@ -181,7 +200,34 @@ run_seed() {
   local seed="$1" gpu="$2" model epsilon
   for model in v23 v36; do
     for epsilon in 0.025 0.0125; do
-      run_evaluation "${model}" "${seed}" "${epsilon}" "${gpu}"
+      run_evaluation "${model}" "${seed}" "${epsilon}" "${gpu}" || return 1
+    done
+  done
+}
+
+reject_incomplete_selected_jobs() {
+  local seed model epsilon output
+  for seed in "${selected_seeds[@]}"; do
+    for model in v23 v36; do
+      for epsilon in 0.025 0.0125; do
+        output="${output_root}/${model}/seed${seed}/$(epsilon_directory "${epsilon}")"
+        if [[ -e "${output}" && ! -f "${output}/completed.json" ]]; then
+          echo "INCOMPLETE: ${output}" >&2
+          return 1
+        fi
+      done
+    done
+  done
+}
+
+all_evaluations_completed() {
+  local model seed epsilon output
+  for model in v23 v36; do
+    for seed in 42 43; do
+      for epsilon in 0.025 0.0125; do
+        output="${output_root}/${model}/seed${seed}/$(epsilon_directory "${epsilon}")"
+        [[ -f "${output}/completed.json" ]] || return 1
+      done
     done
   done
 }
@@ -195,26 +241,48 @@ summary_command=(
 cd "${root}"
 if [[ "${dry_run}" -eq 1 ]]; then
   echo "DRY RUN: inputs validated; no output directory was created."
-  echo "Seed 42 commands (CUDA_VISIBLE_DEVICES=${gpu42}):"
-  run_seed 42 "${gpu42}"
-  echo "Seed 43 commands (CUDA_VISIBLE_DEVICES=${gpu43}):"
-  run_seed 43 "${gpu43}"
+  for seed in "${selected_seeds[@]}"; do
+    if [[ "${seed}" -eq 42 ]]; then
+      echo "Seed 42 commands (CUDA_VISIBLE_DEVICES=${gpu42}):"
+      run_seed 42 "${gpu42}"
+    else
+      echo "Seed 43 commands (CUDA_VISIBLE_DEVICES=${gpu43}):"
+      run_seed 43 "${gpu43}"
+    fi
+  done
   echo "Summary command (run only after all eight evaluations succeed):"
   print_command "${summary_command[@]}"
   exit 0
 fi
 
+reject_incomplete_selected_jobs
 mkdir -p "${output_root}/logs"
-run_seed 42 "${gpu42}" & worker42="$!"
-run_seed 43 "${gpu43}" & worker43="$!"
-
 status=0
-wait "${worker42}" || status=1
-wait "${worker43}" || status=1
+if [[ "${selected_seed}" == "all" ]]; then
+  run_seed 42 "${gpu42}" & worker42="$!"
+  run_seed 43 "${gpu43}" & worker43="$!"
+  wait "${worker42}" || status=1
+  wait "${worker43}" || status=1
+elif [[ "${selected_seed}" == "42" ]]; then
+  run_seed 42 "${gpu42}" || status=1
+else
+  run_seed 43 "${gpu43}" || status=1
+fi
 if [[ "${status}" -ne 0 ]]; then
   echo "V23_V36_EPSILON_REVAL_FAILED; inspect ${output_root}/logs" >&2
   exit "${status}"
 fi
 
-"${summary_command[@]}" | tee "${output_root}/summary_stdout.log"
+if all_evaluations_completed; then
+  if [[ -f "${output_root}/metrics.json" && -f "${output_root}/metrics.tsv" ]]; then
+    echo "SKIP completed summary: ${output_root}"
+  elif [[ -e "${output_root}/metrics.json" || -e "${output_root}/metrics.tsv" ]]; then
+    echo "INCOMPLETE summary: ${output_root}" >&2
+    exit 1
+  else
+    "${summary_command[@]}" | tee "${output_root}/summary_stdout.log"
+  fi
+else
+  echo "SUMMARY pending: all eight evaluations are not complete"
+fi
 echo "V23_V36_EPSILON_REVAL_COMPLETE"
