@@ -2,3 +2,8 @@
 external_benchmark/test_evaluations/epsilon_reval_20260926/**/*.npy
 external_benchmark/test_evaluations/epsilon_reval_20260926/logs/
 external_benchmark/test_evaluations/epsilon_reval_20260926/summary_stdout.log
+
+# Validation-side epsilon sensitivity outputs; commit only metrics.json/metrics.tsv.
+external_benchmark/validation_evaluations/epsilon_reval_20260926/**/*.npy
+external_benchmark/validation_evaluations/epsilon_reval_20260926/logs/
+external_benchmark/validation_evaluations/epsilon_reval_20260926/summary_stdout.log
