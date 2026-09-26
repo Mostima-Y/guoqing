@@ -1,0 +1,548 @@
+{
+  "analysis": "v23_v36_protein_paired_bootstrap_v2_safe_ap",
+  "bootstrap": {
+    "average_precision_implementation": "sklearn.metrics.average_precision_score with protein-cluster sample weights",
+    "macro_delta_v36_minus_v23": {
+      "aupr": {
+        "ci95_high": 0.009304536901785452,
+        "ci95_low": -0.0009726891426968015,
+        "mean": 0.004048795410406887,
+        "median": 0.004057800843613004,
+        "probability_beneficial": 0.9435,
+        "probability_positive": 0.9435
+      },
+      "auroc": {
+        "ci95_high": 0.004663329062903942,
+        "ci95_low": -0.0033251458449917283,
+        "mean": 0.000634839838967537,
+        "median": 0.0006502216707558848,
+        "probability_beneficial": 0.6185,
+        "probability_positive": 0.6185
+      }
+    },
+    "method": "paired protein-cluster bootstrap with replacement",
+    "micro_delta_v36_minus_v23": {
+      "aupr": {
+        "ci95_high": 0.007876200082498126,
+        "ci95_low": 0.001150392674981443,
+        "mean": 0.004302317315369988,
+        "median": 0.004235964239403478,
+        "probability_beneficial": 0.997,
+        "probability_positive": 0.997
+      },
+      "auroc": {
+        "ci95_high": 0.00819792888182617,
+        "ci95_low": 0.000358416923191443,
+        "mean": 0.004088603980533909,
+        "median": 0.00403012508662226,
+        "probability_beneficial": 0.984,
+        "probability_positive": 0.984
+      },
+      "log_loss": {
+        "ci95_high": 0.006303401998945112,
+        "ci95_low": -0.01252088457912961,
+        "mean": -0.0028260262053863895,
+        "median": -0.0027676825413480155,
+        "probability_beneficial": 0.723,
+        "probability_positive": 0.277
+      }
+    },
+    "replicate_validation": {
+      "macro": {
+        "aupr": {
+          "finite": 2000,
+          "replicates": 2000,
+          "status": "PASS"
+        },
+        "auroc": {
+          "finite": 2000,
+          "replicates": 2000,
+          "status": "PASS"
+        }
+      },
+      "micro": {
+        "aupr": {
+          "finite": 2000,
+          "replicates": 2000,
+          "status": "PASS"
+        },
+        "auroc": {
+          "finite": 2000,
+          "replicates": 2000,
+          "status": "PASS"
+        },
+        "log_loss": {
+          "finite": 2000,
+          "replicates": 2000,
+          "status": "PASS"
+        }
+      }
+    },
+    "replicates_completed": 2000,
+    "replicates_requested": 2000,
+    "seed": 20260926
+  },
+  "input_audit": {
+    "epsilon": 0.0125,
+    "metrics_recomputed_match_summary": true,
+    "positive_rows": 69790,
+    "prediction_provenance": {
+      "v23_seed42": {
+        "best_epoch": 6,
+        "checkpoint_sha256": "b9cbf62db187c608a9ae8d3b918e3b760716bd53702d2fa73dac8c3b9cade4a2",
+        "completed": "/mnt/home/dachuang/dtiam/DTIAM-main/DTIAM_Sepsis_Dev/external_benchmark/test_evaluations/epsilon_reval_20260926/v23/seed42/epsilon_0p0125/completed.json",
+        "scores": "/mnt/home/dachuang/dtiam/DTIAM-main/DTIAM_Sepsis_Dev/external_benchmark/test_evaluations/epsilon_reval_20260926/v23/seed42/epsilon_0p0125/candidate_scores_eps00125.npy"
+      },
+      "v23_seed43": {
+        "best_epoch": 32,
+        "checkpoint_sha256": "16350afeb515aec43b5a6349d03d2fd964c02555ed633de2e8278ca16069fc2f",
+        "completed": "/mnt/home/dachuang/dtiam/DTIAM-main/DTIAM_Sepsis_Dev/external_benchmark/test_evaluations/epsilon_reval_20260926/v23/seed43/epsilon_0p0125/completed.json",
+        "scores": "/mnt/home/dachuang/dtiam/DTIAM-main/DTIAM_Sepsis_Dev/external_benchmark/test_evaluations/epsilon_reval_20260926/v23/seed43/epsilon_0p0125/candidate_scores_eps00125.npy"
+      },
+      "v36_seed42": {
+        "best_epoch": 48,
+        "checkpoint_sha256": "98b94118affbc021751175acfb3eeba3958f199227f85732beb17c96933950dd",
+        "completed": "/mnt/home/dachuang/dtiam/DTIAM-main/DTIAM_Sepsis_Dev/external_benchmark/test_evaluations/epsilon_reval_20260926/v36/seed42/epsilon_0p0125/completed.json",
+        "scores": "/mnt/home/dachuang/dtiam/DTIAM-main/DTIAM_Sepsis_Dev/external_benchmark/test_evaluations/epsilon_reval_20260926/v36/seed42/epsilon_0p0125/candidate_scores_eps00125.npy"
+      },
+      "v36_seed43": {
+        "best_epoch": 52,
+        "checkpoint_sha256": "820bf575616050952b2a221faf53294793da7853392eec59fb1f0912f86ba0a0",
+        "completed": "/mnt/home/dachuang/dtiam/DTIAM-main/DTIAM_Sepsis_Dev/external_benchmark/test_evaluations/epsilon_reval_20260926/v36/seed43/epsilon_0p0125/completed.json",
+        "scores": "/mnt/home/dachuang/dtiam/DTIAM-main/DTIAM_Sepsis_Dev/external_benchmark/test_evaluations/epsilon_reval_20260926/v36/seed43/epsilon_0p0125/candidate_scores_eps00125.npy"
+      }
+    },
+    "protein_column": "Protein",
+    "proteins": 843,
+    "rows": 179829,
+    "test_csv": "/mnt/home/dachuang/dti_in_domain_test/splits/protein_cold_start/test.csv",
+    "test_csv_sha256": "1de92afebe892fc512f639735872471231be539f3d7426ee686656acce44ddb7"
+  },
+  "interpretation_constraints": [
+    "Uses frozen inference epsilon 0.0125 selected on protein_cold_valid.",
+    "Uses existing seed42/43 test predictions; no model inference was run.",
+    "Test analysis remains exploratory and does not select checkpoints."
+  ],
+  "macro_both_class_proteins": {
+    "aupr": {
+      "delta": 0.004084807377782745,
+      "eligible_proteins": 416,
+      "v23": 0.5942756126301056,
+      "v36": 0.5983604200078884
+    },
+    "auroc": {
+      "delta": 0.0006785730004666912,
+      "eligible_proteins": 416,
+      "v23": 0.6981549761165551,
+      "v36": 0.6988335491170216
+    },
+    "log_loss": {
+      "delta": 0.005098242580355064,
+      "eligible_proteins": 843,
+      "v23": 0.5402374210464967,
+      "v36": 0.5453356636268518
+    }
+  },
+  "observed_micro": {
+    "v23": {
+      "aupr": 0.6320821379205472,
+      "auroc": 0.7192155379068075,
+      "log_loss": 0.737327692936164
+    },
+    "v36": {
+      "aupr": 0.636306205297835,
+      "auroc": 0.72328504097261,
+      "log_loss": 0.7344620134161228
+    }
+  },
+  "observed_micro_delta_v36_minus_v23": {
+    "aupr": 0.004224067377287755,
+    "auroc": 0.00406950306580256,
+    "log_loss": -0.002865679520041131
+  },
+  "protein_direction_counts": {
+    "aupr": {
+      "declined": 141,
+      "improved": 186,
+      "improvement_direction": "higher",
+      "tie_tolerance": 1e-06,
+      "tied": 89
+    },
+    "auroc": {
+      "declined": 132,
+      "improved": 188,
+      "improvement_direction": "higher",
+      "tie_tolerance": 1e-06,
+      "tied": 96
+    },
+    "log_loss": {
+      "declined": 413,
+      "improved": 430,
+      "improvement_direction": "lower",
+      "tie_tolerance": 1e-06,
+      "tied": 0
+    }
+  },
+  "regression_checks": {
+    "previous_macro_results": {
+      "comparisons": {
+        "bootstrap_macro.aupr.ci95_high": 0.0,
+        "bootstrap_macro.aupr.ci95_low": 0.0,
+        "bootstrap_macro.aupr.mean": 0.0,
+        "bootstrap_macro.aupr.median": 0.0,
+        "bootstrap_macro.aupr.probability_positive": 0.0,
+        "bootstrap_macro.auroc.ci95_high": 0.0,
+        "bootstrap_macro.auroc.ci95_low": 0.0,
+        "bootstrap_macro.auroc.mean": 0.0,
+        "bootstrap_macro.auroc.median": 0.0,
+        "bootstrap_macro.auroc.probability_positive": 0.0,
+        "observed_macro.aupr.delta": 0.0,
+        "observed_macro.aupr.v23": 0.0,
+        "observed_macro.aupr.v36": 0.0,
+        "observed_macro.auroc.delta": 0.0,
+        "observed_macro.auroc.v23": 0.0,
+        "observed_macro.auroc.v36": 0.0
+      },
+      "maximum_absolute_difference": 0.0,
+      "reference_metrics": "/mnt/home/dachuang/dtiam/DTIAM-main/DTIAM_Sepsis_Dev/external_benchmark/audits/protein_bootstrap_20260926/metrics.json",
+      "status": "PASS",
+      "tolerance": 1e-12
+    },
+    "sklearn_equivalence": {
+      "metrics": [
+        "aupr",
+        "auroc",
+        "log_loss"
+      ],
+      "replicates_checked": 5,
+      "status": "PASS",
+      "tolerance": 1e-08
+    }
+  },
+  "strata": [
+    {
+      "both_class_proteins": 15,
+      "direction_aupr": {
+        "declined": 0,
+        "improved": 0,
+        "improvement_direction": "higher",
+        "tie_tolerance": 1e-06,
+        "tied": 15
+      },
+      "direction_auroc": {
+        "declined": 0,
+        "improved": 0,
+        "improvement_direction": "higher",
+        "tie_tolerance": 1e-06,
+        "tied": 15
+      },
+      "direction_log_loss": {
+        "declined": 97,
+        "improved": 114,
+        "improvement_direction": "lower",
+        "tie_tolerance": 1e-06,
+        "tied": 0
+      },
+      "macro_aupr_v23": 0.8333333333333334,
+      "macro_aupr_v36": 0.8333333333333334,
+      "macro_auroc_v23": 0.6666666666666666,
+      "macro_auroc_v36": 0.6666666666666666,
+      "macro_delta_aupr": 0.0,
+      "macro_delta_auroc": 0.0,
+      "macro_delta_log_loss": 0.0064820715953518415,
+      "macro_log_loss_v23": 0.5077126503092241,
+      "macro_log_loss_v36": 0.5141947219045759,
+      "max_rows_per_protein": 2,
+      "micro_delta_v36_minus_v23": {
+        "aupr": -0.006463772514541,
+        "auroc": -0.0033854166666666963,
+        "log_loss": 0.0046308848558686
+      },
+      "micro_v23": {
+        "aupr": 0.6309987110403434,
+        "auroc": 0.7481770833333333,
+        "log_loss": 0.5386227804633124
+      },
+      "micro_v36": {
+        "aupr": 0.6245349385258024,
+        "auroc": 0.7447916666666666,
+        "log_loss": 0.543253665319181
+      },
+      "min_rows_per_protein": 1,
+      "proteins": 211,
+      "row_fraction": 0.0013790879112935066,
+      "rows": 248,
+      "stratum": "count_quartile_1"
+    },
+    {
+      "both_class_proteins": 63,
+      "direction_aupr": {
+        "declined": 7,
+        "improved": 5,
+        "improvement_direction": "higher",
+        "tie_tolerance": 1e-06,
+        "tied": 51
+      },
+      "direction_auroc": {
+        "declined": 7,
+        "improved": 5,
+        "improvement_direction": "higher",
+        "tie_tolerance": 1e-06,
+        "tied": 51
+      },
+      "direction_log_loss": {
+        "declined": 105,
+        "improved": 106,
+        "improvement_direction": "lower",
+        "tie_tolerance": 1e-06,
+        "tied": 0
+      },
+      "macro_aupr_v23": 0.802700515030447,
+      "macro_aupr_v36": 0.8041838861566751,
+      "macro_auroc_v23": 0.7450932224741749,
+      "macro_auroc_v36": 0.7396951373141849,
+      "macro_delta_aupr": 0.0014833711262282722,
+      "macro_delta_auroc": -0.005398085159989923,
+      "macro_delta_log_loss": 0.014004665531681957,
+      "macro_log_loss_v23": 0.47892560398089334,
+      "macro_log_loss_v36": 0.49293026951257524,
+      "max_rows_per_protein": 13,
+      "micro_delta_v36_minus_v23": {
+        "aupr": -0.004060279299312186,
+        "auroc": -0.007931855651218234,
+        "log_loss": 0.014727040417036485
+      },
+      "micro_v23": {
+        "aupr": 0.5296920231907151,
+        "auroc": 0.7882396043231361,
+        "log_loss": 0.4893232947896832
+      },
+      "micro_v36": {
+        "aupr": 0.5256317438914029,
+        "auroc": 0.7803077486719179,
+        "log_loss": 0.5040503352067197
+      },
+      "min_rows_per_protein": 2,
+      "proteins": 211,
+      "row_fraction": 0.005566399190341936,
+      "rows": 1001,
+      "stratum": "count_quartile_2"
+    },
+    {
+      "both_class_proteins": 142,
+      "direction_aupr": {
+        "declined": 55,
+        "improved": 66,
+        "improvement_direction": "higher",
+        "tie_tolerance": 1e-06,
+        "tied": 21
+      },
+      "direction_auroc": {
+        "declined": 56,
+        "improved": 59,
+        "improvement_direction": "higher",
+        "tie_tolerance": 1e-06,
+        "tied": 27
+      },
+      "direction_log_loss": {
+        "declined": 119,
+        "improved": 92,
+        "improvement_direction": "lower",
+        "tie_tolerance": 1e-06,
+        "tied": 0
+      },
+      "macro_aupr_v23": 0.5902379041824085,
+      "macro_aupr_v36": 0.5902604217409576,
+      "macro_auroc_v23": 0.6949705874047978,
+      "macro_auroc_v36": 0.6913608972357215,
+      "macro_delta_aupr": 2.2517558549016573e-05,
+      "macro_delta_auroc": -0.003609690169076132,
+      "macro_delta_log_loss": 0.004780547753484857,
+      "macro_log_loss_v23": 0.49530636520383103,
+      "macro_log_loss_v36": 0.500086912957316,
+      "max_rows_per_protein": 97,
+      "micro_delta_v36_minus_v23": {
+        "aupr": -0.001700704043964496,
+        "auroc": -0.0009805303314611713,
+        "log_loss": 0.005911007931817092
+      },
+      "micro_v23": {
+        "aupr": 0.6801241102784531,
+        "auroc": 0.8218537892953696,
+        "log_loss": 0.5487848884249324
+      },
+      "micro_v36": {
+        "aupr": 0.6784234062344886,
+        "auroc": 0.8208732589639084,
+        "log_loss": 0.5546958963567495
+      },
+      "min_rows_per_protein": 13,
+      "proteins": 211,
+      "row_fraction": 0.05014207941989334,
+      "rows": 9017,
+      "stratum": "count_quartile_3"
+    },
+    {
+      "both_class_proteins": 196,
+      "direction_aupr": {
+        "declined": 79,
+        "improved": 115,
+        "improvement_direction": "higher",
+        "tie_tolerance": 1e-06,
+        "tied": 2
+      },
+      "direction_auroc": {
+        "declined": 69,
+        "improved": 124,
+        "improvement_direction": "higher",
+        "tie_tolerance": 1e-06,
+        "tied": 3
+      },
+      "direction_log_loss": {
+        "declined": 92,
+        "improved": 118,
+        "improvement_direction": "lower",
+        "tie_tolerance": 1e-06,
+        "tied": 0
+      },
+      "macro_aupr_v23": 0.5119119388433865,
+      "macro_aupr_v36": 0.520088622490791,
+      "macro_auroc_v23": 0.6877845593731253,
+      "macro_auroc_v36": 0.6935750784408923,
+      "macro_delta_aupr": 0.008176683647404493,
+      "macro_delta_auroc": 0.005790519067766935,
+      "macro_delta_log_loss": -0.004921802926429135,
+      "macro_log_loss_v23": 0.6796658629951126,
+      "macro_log_loss_v36": 0.6747440600686834,
+      "max_rows_per_protein": 7248,
+      "micro_delta_v36_minus_v23": {
+        "aupr": 0.0046183242606251396,
+        "auroc": 0.004427390302703116,
+        "log_loss": -0.00344722650479401
+      },
+      "micro_v23": {
+        "aupr": 0.6303529740862784,
+        "auroc": 0.7127234452275706,
+        "log_loss": 0.7491086928542807
+      },
+      "micro_v36": {
+        "aupr": 0.6349712983469036,
+        "auroc": 0.7171508355302737,
+        "log_loss": 0.7456614663494867
+      },
+      "min_rows_per_protein": 97,
+      "proteins": 210,
+      "row_fraction": 0.9429124334784712,
+      "rows": 169563,
+      "stratum": "count_quartile_4"
+    },
+    {
+      "both_class_proteins": 98,
+      "direction_aupr": {
+        "declined": 39,
+        "improved": 59,
+        "improvement_direction": "higher",
+        "tie_tolerance": 1e-06,
+        "tied": 0
+      },
+      "direction_auroc": {
+        "declined": 35,
+        "improved": 63,
+        "improvement_direction": "higher",
+        "tie_tolerance": 1e-06,
+        "tied": 0
+      },
+      "direction_log_loss": {
+        "declined": 46,
+        "improved": 54,
+        "improvement_direction": "lower",
+        "tie_tolerance": 1e-06,
+        "tied": 0
+      },
+      "macro_aupr_v23": 0.525604733354529,
+      "macro_aupr_v36": 0.5314506359915937,
+      "macro_auroc_v23": 0.6824164896515725,
+      "macro_auroc_v36": 0.6879132564196175,
+      "macro_delta_aupr": 0.0058459026370647595,
+      "macro_delta_auroc": 0.005496766768045061,
+      "macro_delta_log_loss": -0.008905351467772544,
+      "macro_log_loss_v23": 0.7295787900889494,
+      "macro_log_loss_v36": 0.7206734386211769,
+      "max_rows_per_protein": 7248,
+      "micro_delta_v36_minus_v23": {
+        "aupr": 0.004332393708619708,
+        "auroc": 0.004657549529449634,
+        "log_loss": -0.0036895835697117185
+      },
+      "micro_v23": {
+        "aupr": 0.6364820931779402,
+        "auroc": 0.7010152220713165,
+        "log_loss": 0.7694113738148057
+      },
+      "micro_v36": {
+        "aupr": 0.64081448688656,
+        "auroc": 0.7056727716007661,
+        "log_loss": 0.765721790245094
+      },
+      "min_rows_per_protein": 359,
+      "proteins": 100,
+      "row_fraction": 0.8197843506887098,
+      "rows": 147421,
+      "stratum": "top_100_by_row_count"
+    },
+    {
+      "both_class_proteins": 318,
+      "direction_aupr": {
+        "declined": 102,
+        "improved": 127,
+        "improvement_direction": "higher",
+        "tie_tolerance": 1e-06,
+        "tied": 89
+      },
+      "direction_auroc": {
+        "declined": 97,
+        "improved": 125,
+        "improvement_direction": "higher",
+        "tie_tolerance": 1e-06,
+        "tied": 96
+      },
+      "direction_log_loss": {
+        "declined": 367,
+        "improved": 376,
+        "improvement_direction": "lower",
+        "tie_tolerance": 1e-06,
+        "tied": 0
+      },
+      "macro_aupr_v23": 0.6154383364320128,
+      "macro_aupr_v36": 0.618980416339954,
+      "macro_auroc_v23": 0.7030052015051345,
+      "macro_auroc_v36": 0.7021989223382342,
+      "macro_delta_aupr": 0.0035420799079411204,
+      "macro_delta_auroc": -0.0008062791669002276,
+      "macro_delta_log_loss": 0.006982979329766585,
+      "macro_log_loss_v23": 0.5147540604755071,
+      "macro_log_loss_v36": 0.5217370398052738,
+      "max_rows_per_protein": 358,
+      "micro_delta_v36_minus_v23": {
+        "aupr": 0.0034739593371013733,
+        "auroc": 0.0014460105310251103,
+        "log_loss": 0.0008821839367126882
+      },
+      "micro_v23": {
+        "aupr": 0.6052719826276886,
+        "auroc": 0.7831930753639966,
+        "log_loss": 0.5913819906771455
+      },
+      "micro_v36": {
+        "aupr": 0.6087459419647899,
+        "auroc": 0.7846390858950217,
+        "log_loss": 0.5922641746138582
+      },
+      "min_rows_per_protein": 1,
+      "proteins": 743,
+      "row_fraction": 0.18021564931129017,
+      "rows": 32408,
+      "stratum": "all_except_top_100"
+    }
+  ]
+}
