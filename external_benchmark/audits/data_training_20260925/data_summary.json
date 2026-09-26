@@ -1,0 +1,160 @@
+{
+  "splits": {
+    "train": {
+      "rows": 1735141,
+      "positive": 676322,
+      "positive_rate": 0.38977927442207866,
+      "unique_sequences": 6761,
+      "unique_accessions": 5853,
+      "unique_smiles": 1114136,
+      "unique_input_pairs": 1735141,
+      "duplicate_pair_extra_rows": 0,
+      "conflicting_input_pairs": 0,
+      "conflict_rows": 0,
+      "matrix_label_mismatch": 0,
+      "single_class_proteins": 3372,
+      "single_class_row_fraction": 0.03796118010006103,
+      "top10_row_fraction": 0.07505672449674118,
+      "top100_row_fraction": 0.38430421504650053,
+      "concentration_effective_protein_count": 448.5929559653448,
+      "rows_per_protein_quantiles": {
+        "0": 1.0,
+        "0.5": 12.0,
+        "0.9": 495.0,
+        "0.99": 4736.999999999993,
+        "1": 16517.0
+      },
+      "unique_long_proteins": 645,
+      "long_protein_rows": 277734,
+      "structure_paths": 5606,
+      "existing_structure_paths": 2511
+    },
+    "valid": {
+      "rows": 212133,
+      "positive": 83988,
+      "positive_rate": 0.39592142665214747,
+      "unique_sequences": 862,
+      "unique_accessions": 732,
+      "unique_smiles": 181352,
+      "unique_input_pairs": 212133,
+      "duplicate_pair_extra_rows": 0,
+      "conflicting_input_pairs": 0,
+      "conflict_rows": 0,
+      "matrix_label_mismatch": 0,
+      "single_class_proteins": 432,
+      "single_class_row_fraction": 0.03914525321378569,
+      "top10_row_fraction": 0.3059307132789335,
+      "top100_row_fraction": 0.872056681421561,
+      "concentration_effective_protein_count": 63.88796167414812,
+      "rows_per_protein_quantiles": {
+        "0": 1.0,
+        "0.5": 11.0,
+        "0.9": 393.39999999999986,
+        "0.99": 4590.929999999985,
+        "1": 9226.0
+      },
+      "unique_long_proteins": 82,
+      "long_protein_rows": 35079,
+      "structure_paths": 716,
+      "existing_structure_paths": 302
+    },
+    "test": {
+      "rows": 179829,
+      "positive": 69790,
+      "positive_rate": 0.3880909085853783,
+      "unique_sequences": 843,
+      "unique_accessions": 732,
+      "unique_smiles": 164302,
+      "unique_input_pairs": 179829,
+      "duplicate_pair_extra_rows": 0,
+      "conflicting_input_pairs": 0,
+      "conflict_rows": 0,
+      "matrix_label_mismatch": 0,
+      "single_class_proteins": 427,
+      "single_class_row_fraction": 0.0409833786541659,
+      "top10_row_fraction": 0.28740636938424835,
+      "top100_row_fraction": 0.8197843506887098,
+      "concentration_effective_protein_count": 75.10257785219214,
+      "rows_per_protein_quantiles": {
+        "0": 1.0,
+        "0.5": 13.0,
+        "0.9": 506.40000000000055,
+        "0.99": 3848.5400000000086,
+        "1": 7248.0
+      },
+      "unique_long_proteins": 94,
+      "long_protein_rows": 27570,
+      "structure_paths": 720,
+      "existing_structure_paths": 312
+    }
+  },
+  "overlaps": {
+    "train_valid": {
+      "p": {
+        "unique_shared": 0,
+        "left_rows": 0,
+        "right_rows": 0
+      },
+      "uid": {
+        "unique_shared": 0,
+        "left_rows": 0,
+        "right_rows": 0
+      },
+      "pair": {
+        "unique_shared": 0,
+        "left_rows": 0,
+        "right_rows": 0
+      },
+      "d": {
+        "unique_shared": 100089,
+        "left_rows": 266255,
+        "right_rows": 122855
+      }
+    },
+    "train_test": {
+      "p": {
+        "unique_shared": 2,
+        "left_rows": 59,
+        "right_rows": 907
+      },
+      "uid": {
+        "unique_shared": 0,
+        "left_rows": 0,
+        "right_rows": 0
+      },
+      "pair": {
+        "unique_shared": 0,
+        "left_rows": 0,
+        "right_rows": 0
+      },
+      "d": {
+        "unique_shared": 82110,
+        "left_rows": 215636,
+        "right_rows": 95544
+      }
+    },
+    "valid_test": {
+      "p": {
+        "unique_shared": 0,
+        "left_rows": 0,
+        "right_rows": 0
+      },
+      "uid": {
+        "unique_shared": 0,
+        "left_rows": 0,
+        "right_rows": 0
+      },
+      "pair": {
+        "unique_shared": 0,
+        "left_rows": 0,
+        "right_rows": 0
+      },
+      "d": {
+        "unique_shared": 22383,
+        "left_rows": 30594,
+        "right_rows": 30167
+      }
+    }
+  },
+  "note": "Exact raw strings via uint64 pandas hashes, not canonical chemistry or homology audit. Structure files checked for existence only."
+}

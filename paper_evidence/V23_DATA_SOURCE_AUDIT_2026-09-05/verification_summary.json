@@ -1,0 +1,9 @@
+{
+  "matrix_csv_rows_verified": 5466235,
+  "sampled_feature_rows_verified": 2837,
+  "source_snapshots_verified": 54,
+  "cross_reconstruction_matches": true,
+  "external_warm_file_sha_matches": true,
+  "historical_warm_split_reconstruction_matches": false,
+  "training_or_inference_performed": false
+}
